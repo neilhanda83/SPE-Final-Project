@@ -14,6 +14,6 @@
         chdir: ./
 
     - name: Run the pulled Docker images in detached mode
-      command: docker compose up -d --build
+      command: sudo docker compose up -d --build
       args:
         chdir: ./
