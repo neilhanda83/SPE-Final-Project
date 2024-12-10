@@ -36,3 +36,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Node modules###
+/Client/node_modules
+/Server/node_modules
+/node_modules
