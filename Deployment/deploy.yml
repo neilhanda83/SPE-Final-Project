@@ -6,11 +6,11 @@
     - name: Copy Docker Compose file from host machine to remote host
       copy:
         src: ../docker-compose.yml
-        dest: ./docker-compose.yml
+        dest: ./
 
     - name: Pull the Docker images specified in docker-compose
       shell:
-        cmd: docker compose pull
+        cmd: sudo docker compose pull
         chdir: ./
 
     - name: Run the pulled Docker images in detached mode
