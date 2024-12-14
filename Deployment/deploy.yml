@@ -1,19 +1,32 @@
 ---
-- name: Deploy docker images
+- name: Deploy Dockerized Application
   hosts: localhost
-
+  become: true  # Escalates privileges when required
   tasks:
-    - name: Copy Docker Compose file from host machine to remote host
-      copy:
-        src: ./docker-compose.yml
-        dest: ./
+    - name: Ensure Docker Compose is installed
+      command: docker compose version
+      register: compose_check
+      failed_when: "'Docker Compose version' not in compose_check.stdout"
+      ignore_errors: no
 
-    - name: Pull the Docker images specified in docker-compose
-      shell:
-        cmd: sudo docker compose pull
-        chdir: ./
-
-    - name: Run the pulled Docker images in detached mode
-      command: sudo docker compose up -d --build
+    - name: Change to deployment directory
+      command: pwd
       args:
-        chdir: ./
+        chdir: "{{ playbook_dir }}/../Deployment"
+      register: deployment_dir
+      changed_when: false
+
+    - name: Stop any running containers
+      command: docker compose down
+      args:
+        chdir: "{{ playbook_dir }}/../Deployment"
+
+    - name: Build and run Docker containers
+      command: docker compose up -d --build
+      args:
+        chdir: "{{ playbook_dir }}/../Deployment"
+
+    - name: Clean up unused Docker resources
+      command: docker system prune -f --volumes
+      register: prune_result
+      changed_when: false
